@@ -1,0 +1,31 @@
+@api=http://localhost:3000/tasks
+@apia=http://localhost:3000/admin
+@apip=http://localhost:3000/productos
+GET {{apip}}
+###
+GET {{apia}}/1
+###
+GET {{api}}
+###
+GET {{api}}/1
+###
+GET {{api}}/count
+###
+POST {{api}}
+content-type: application/json
+
+{
+    "title" : "task for",
+    "description" : "description for"
+}
+###
+DELETE {{api}}/1
+
+###
+PUT {{api}}/1
+content-type: application/json
+
+{
+    "title": "Task one",
+    "description": "Description three"
+}
