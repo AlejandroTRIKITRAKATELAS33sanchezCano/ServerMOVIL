@@ -2,7 +2,7 @@ import connect from "../database.js";
 
 const getAdmin = async (req, res) => {
     const connection = await connect();
-    const [rows] = await connection.query(`SELECT * FROM ADMIN where idAdmin = ${req.params.idAdmin}`);
+    const [rows] = await connection.query(`SELECT * FROM Admin where idAdmin = ${req.params.idAdmin}`);
     //console.log(rows);
     res.json(rows);
 
@@ -11,7 +11,7 @@ const getAdmin = async (req, res) => {
 }
 const getidAdmin = async (req, res) => {
     const connection = await connect();
-    const [rows] = await connection.query(`SELECT idAdmin FROM ADMIN;`);
+    const [rows] = await connection.query(`SELECT idAdmin FROM Admin;`);
     //console.log(rows);
     res.json(rows);
 }
@@ -19,7 +19,7 @@ const getidAdmin = async (req, res) => {
 const getEmpUrl = async (req, res) => {
     //console.log(`El id dentro del back es: ${req.params.idEmpleado}`)
     const connection = await connect();
-    const [rows] = await connection.query(`SELECT EmUrlimg from EMPLEADO  where idEmpleado = ${req.params.idEmpleado}`);
+    const [rows] = await connection.query(`SELECT EmUrlimg from Empleado  where idEmpleado = ${req.params.idEmpleado}`);
     //console.log(rows);
     res.json(rows);
 }
@@ -27,7 +27,7 @@ const getEmpUrl = async (req, res) => {
 const getProductUrl = async (req, res) => {
     //console.log(`El id dentro del back es: ${req.params.idProductos}`)
     const connection = await connect();
-    const [rows] = await connection.query(`SELECT PrURLimg from PRODUCTOS WHERE idProductos = ${req.params.idProductos}`);
+    const [rows] = await connection.query(`SELECT PrURLimg from Productos WHERE idProductos = ${req.params.idProductos}`);
     //console.log(rows);
     res.json(rows);
 }
@@ -46,20 +46,20 @@ const saveAdmin = async (req, res) => {
 
 const getEmpleadoId = async (req, res) => {
     const connection = await connect();
-    const [rows] = await connection.query(`SELECT idEmpleado FROM EMPLEADO;`);
+    const [rows] = await connection.query(`SELECT idEmpleado FROM Empleado;`);
     //console.log(rows);
     res.json(rows);
 }
 
 const getProductos = async (req, res) => {
     const connection = await connect();
-    const [rows] = await connection.query(`SELECT * FROM PRODUCTOS where Admin_idAdmin = ${req.params.idAdmin}`);
+    const [rows] = await connection.query(`SELECT * FROM Productos where Admin_idAdmin = ${req.params.idAdmin}`);
     res.json(rows);
 }
 
 const getProductoId = async (req, res) => {
     const connection = await connect();
-    const [rows] = await connection.query(`SELECT idProductos from PRODUCTOS`);
+    const [rows] = await connection.query(`SELECT idProductos from Productos`);
     //console.log(rows);
     res.json(rows);
 }
@@ -67,7 +67,7 @@ const getProductoId = async (req, res) => {
 const saveProducto = async (req, res) => {
     const connection = await connect();
     //console.log(`LAS RESPUESTAS DEL BACK EN SAVEPRODUCTO SON: ${req.body.idEmpleado}, ${req.body.EmNombre},  ${req.body.EmApat},  ${req.body.EmAmat}, ${req.body.EmContrasenna}, ${req.body.Admin_idAdmin}, ${req.body.Eimagen_idEimagen}`)
-    const [results] = await connection.query("INSERT INTO PRODUCTOS(idProductos, PrNombre, PrPrecio, PrExistencias, PrDescripcion, Admin_idAdmin, Marca_idMarca, Categoria_idCategoria, Pcodigo, PrURLimg) VALUES (?,?,?,?,?,?,?,?,?,?)", [req.body.idProductos, req.body.PrNombre, req.body.PrPrecio, req.body.PrExistencias, req.body.PrDescripcion, req.body.Admin_idAdmin, req.body.Marca_idMarca, req.body.Categoria_idCategoria, 1, req.body.PrURLimg]);
+    const [results] = await connection.query("INSERT INTO Productos(idProductos, PrNombre, PrPrecio, PrExistencias, PrDescripcion, Admin_idAdmin, Marca_idMarca, Categoria_idCategoria, Pcodigo, PrURLimg) VALUES (?,?,?,?,?,?,?,?,?,?)", [req.body.idProductos, req.body.PrNombre, req.body.PrPrecio, req.body.PrExistencias, req.body.PrDescripcion, req.body.Admin_idAdmin, req.body.Marca_idMarca, req.body.Categoria_idCategoria, 1, req.body.PrURLimg]);
 
     res.json({
         id: results.insertId,
@@ -77,7 +77,7 @@ const saveProducto = async (req, res) => {
 
 const getProducto = async (req, res) => {
     const connection = await connect();
-    const [rows] = await connection.query(`SELECT * FROM PRODUCTOS where idProductos = ${req.params.idProducto}`);
+    const [rows] = await connection.query(`SELECT * FROM Productos where idProductos = ${req.params.idProducto}`);
     res.json(rows[0]);
 }
 
@@ -89,7 +89,7 @@ const getMarcas = async (req, res) => {
      */
     try {
         const connection = await connect();
-        const [rows] = await connection.query(`SELECT MarNombre FROM MARCA`);
+        const [rows] = await connection.query(`SELECT MarNombre FROM Marca`);
         res.json(rows);
     } catch (error) {
         console.error('Error al obtener las marcas en getMarcas', error);
@@ -100,7 +100,7 @@ const getMarcas = async (req, res) => {
 const getCategorias = async (req, res) => {
     try {
         const connection = await connect();
-        const [rows] = await connection.query(`SELECT CatNombre FROM CATEGORIA`);
+        const [rows] = await connection.query(`SELECT CatNombre FROM Categoria`);
         res.json(rows);
     } catch (error) {
         console.error('Error al obtener las marcas en getMarcas', error);
@@ -110,12 +110,12 @@ const getCategorias = async (req, res) => {
 
 const getTasks = async (req, res) => {
     const connection = await connect();
-    const [rows] = await connection.query(`SELECT * FROM EMPLEADO where Admin_idAdmin= ${req.params.idAdmin}`);
+    const [rows] = await connection.query(`SELECT * FROM Empleado where Admin_idAdmin= ${req.params.idAdmin}`);
     res.json(rows);
 }
 const getTask = async (req, res) => {
     const connection = await connect();
-    const [rows] = await connection.query(`SELECT * FROM EMPLEADO where idEmpleado = ${req.params.idEmpleado}`);
+    const [rows] = await connection.query(`SELECT * FROM Empleado where idEmpleado = ${req.params.idEmpleado}`);
     //console.log(rows);
     res.json(rows[0]);
 
@@ -124,7 +124,7 @@ const getTask = async (req, res) => {
 }
 const getTaskCount = async (req, res) => {
     const connection = await connect();
-    const [rows] = await connection.query(`SELECT COUNT(*) FROM EMPLEADO`);
+    const [rows] = await connection.query(`SELECT COUNT(*) FROM Empleado`);
     res.json(rows[0]["COUNT(*)"]);
     /*    res.send("hello world from getTaskCount")
         console.log("hello world from getTaskCount");*/
@@ -133,7 +133,7 @@ const saveTask = async (req, res) => {
     const connection = await connect();
     //console.log(`LAS RESPUESTAS DEL BACK EN SAVE SON: ${req.body.idEmpleado}, ${req.body.EmNombre},  ${req.body.EmApat},  ${req.body.EmAmat}, ${req.body.EmContrasenna}, ${req.body.Admin_idAdmin}, ${req.body.Eimagen_idEimagen}`)
     //console.log(`EL VALOR DEL idEmpleado dentro del back node es : ${req.body.idEmpleado}`)
-    const [results] = await connection.query("INSERT INTO EMPLEADO(idEmpleado, EmNombre, EmApat, EmAmat, EmContrasenna, EmDireccion1,EmDireccion2,Admin_idAdmin,Admin_Gestick_idGestick,EmURLimg) VALUES (?,?,?,?,?,?,?,?,?,?)", [req.body.idEmpleado, req.body.EmNombre, req.body.EmApat, req.body.EmAmat, req.body.EmContrasenna, 1, 1, req.body.Admin_idAdmin, 1, req.body.EmURLimg]);
+    const [results] = await connection.query("INSERT INTO Empleado(idEmpleado, EmNombre, EmApat, EmAmat, EmContrasenna, EmDireccion1,EmDireccion2,Admin_idAdmin,Admin_Gestick_idGestick,EmURLimg) VALUES (?,?,?,?,?,?,?,?,?,?)", [req.body.idEmpleado, req.body.EmNombre, req.body.EmApat, req.body.EmAmat, req.body.EmContrasenna, 1, 1, req.body.Admin_idAdmin, 1, req.body.EmURLimg]);
 
     res.json({
         id: results.insertId,
@@ -145,7 +145,7 @@ const saveTask = async (req, res) => {
 }
 const deleteTasks = async (req, res) => {
     const connection = await connect();
-    const result = await connection.query(`DELETE FROM EMPLEADO where idEmpleado = ${req.params.idEmpleado}`);
+    const result = await connection.query(`DELETE FROM Empleado where idEmpleado = ${req.params.idEmpleado}`);
     /**    console.log(`EL RESULTADO DEL ID OBTENIDO EN DELETE ES: ${req.params.idEmpleado}`); */
     res.sendStatus(204);
 
@@ -155,7 +155,7 @@ const deleteTasks = async (req, res) => {
 
 const deleteProductos = async (req, res) => {
     const connection = await connect();
-    const result = await connection.query(`DELETE FROM PRODUCTOS WHERE idProductos = ${req.params.idProductos}`);
+    const result = await connection.query(`DELETE FROM Producto WHERE idProductos = ${req.params.idProductos}`);
     /**    console.log(`EL RESULTADO DEL ID OBTENIDO EN DELETE ES: ${req.params.idEmpleado}`); */
     res.sendStatus(204);
 
@@ -165,7 +165,7 @@ const deleteProductos = async (req, res) => {
 
 const updateTasks = async (req, res) => {
     const connection = await connect()
-    const results = await connection.query(`UPDATE EMPLEADO SET EmNombre='${req.body.EmNombre}', EmApat='${req.body.EmApat}', EmAmat='${req.body.EmAmat}',EmContrasenna='${req.body.EmContrasenna}',EmURLimg='${req.body.EmURLimg}' WHERE idEmpleado=${req.body.idEmpleado}`)
+    const results = await connection.query(`UPDATE Empleado SET EmNombre='${req.body.EmNombre}', EmApat='${req.body.EmApat}', EmAmat='${req.body.EmAmat}',EmContrasenna='${req.body.EmContrasenna}',EmURLimg='${req.body.EmURLimg}' WHERE idEmpleado=${req.body.idEmpleado}`)
     //console.log(results)
     res.sendStatus(204);
 
@@ -176,7 +176,7 @@ const updateTasks = async (req, res) => {
 
 const updateProducto = async (req, res) => {
     const connection = await connect()
-    const results = await connection.query(`UPDATE PRODUCTOS SET PrNombre = '${req.body.PrNombre}', PrExistencias = ${req.body.PrExistencias}, PrPrecio = ${req.body.PrPrecio}, PrDescripcion = '${req.body.PrDescripcion}', Marca_idMarca = ${req.body.Marca_idMarca}, Categoria_idCategoria = ${req.body.Categoria_idCategoria}, PrURLimg = '${req.body.PrURLimg}' WHERE idProductos = ${req.body.idProductos}`)
+    const results = await connection.query(`UPDATE Productos SET PrNombre = '${req.body.PrNombre}', PrExistencias = ${req.body.PrExistencias}, PrPrecio = ${req.body.PrPrecio}, PrDescripcion = '${req.body.PrDescripcion}', Marca_idMarca = ${req.body.Marca_idMarca}, Categoria_idCategoria = ${req.body.Categoria_idCategoria}, PrURLimg = '${req.body.PrURLimg}' WHERE idProductos = ${req.body.idProductos}`)
     //console.log(results)
     res.sendStatus(204);
 }
