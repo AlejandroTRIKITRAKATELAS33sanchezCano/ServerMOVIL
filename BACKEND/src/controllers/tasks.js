@@ -1,9 +1,11 @@
 import connect from "../database.js";
 
 const getAdmin = async (req, res) => {
+    console.log(req.params.idAdmin);
     const connection = await connect();
     const [rows] = await connection.query(`SELECT * FROM Admin where idAdmin = ${req.params.idAdmin}`);
     //console.log(rows);
+    console.log(rows);
     res.json(rows);
 
     /*res.send("hello world from getTask")
