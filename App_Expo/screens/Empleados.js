@@ -6,7 +6,10 @@ export const Empleados = ({ navigation, route }) => {
   //console.log(`El idAdmin en Empleados: ${idadminB}`);
   return (
     <View style={[styles.center, styles.viewone]}>
-      <StatusBar backgroundColor='gray' />
+      <StatusBar
+        backgroundColor="#00A2E8"
+        barStyle="white"
+      />
       <ScrollView>
         <TaskList navigation={navigation} />
       </ScrollView>

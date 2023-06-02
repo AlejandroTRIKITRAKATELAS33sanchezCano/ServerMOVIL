@@ -3,7 +3,7 @@ import { React, useState, useEffect } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 
-export const UploadCloudinary = ({ onImageSelected, image, com }) => {
+export const UploadCloudinaryProduct = ({ onImageSelected, image, com }) => {
   const uploadImageToCloudinary = async (localUri) => {
     try {
       const cloudinaryUrl = 'https://api.cloudinary.com/v1_1/dkhzhsqzh/image/upload';
@@ -54,7 +54,7 @@ export const UploadCloudinary = ({ onImageSelected, image, com }) => {
     <TouchableOpacity onPress={openImagePickerAsync} disabled={com}>
       <Image
         source={{
-          uri: selectedImage ? selectedImage.localUri || selectedImage.remoteUri : "https://cdn-icons-png.flaticon.com/512/912/912265.png",
+          uri: selectedImage ? selectedImage.localUri || selectedImage.remoteUri : "https://www.hostinger.es/tutoriales/wp-content/uploads/sites/7/2022/05/descripcion-de-un-producto.png",
         }}
         style={styles.imageone}
       />

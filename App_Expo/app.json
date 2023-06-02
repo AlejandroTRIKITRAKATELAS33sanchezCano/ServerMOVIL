@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "project-lastwice",
+    "name": "Gestick",
     "slug": "project-lastwice",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/gestickicon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/gestickicon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -22,12 +22,18 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/gestickicon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.Gestick.app"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/gestickicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "df2794a5-3372-4c93-acc5-bf0eb319dc4a"
+      }
     }
   }
 }

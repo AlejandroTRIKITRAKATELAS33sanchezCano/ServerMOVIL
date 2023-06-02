@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable } from 'react-native'
+import { View, Text, StyleSheet, Pressable,Dimensions } from 'react-native'
 import { React, useState, useEffect } from 'react'
 import Session from '../components/Session';
 const Bienvenida = ({ navigation, route }) => {
@@ -28,6 +28,8 @@ const Bienvenida = ({ navigation, route }) => {
   )
 }
 
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
   Viewone: {
@@ -40,7 +42,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     top: '35%',
     color: '#01A7C2',
-    fontSize: 50,
+    fontSize: windowWidth*0.13,
     fontWeight: '700',
     fontFamily: 'Cambria, Cochin, Georgia, Times, Times New Roman, serif'
   },
@@ -48,6 +50,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
+    fontSize: windowWidth * 0.04
   },
   button: {
     borderRadius: 8,
@@ -56,8 +59,8 @@ const styles = StyleSheet.create({
   },
   buttonOpen: {
     backgroundColor: '#01A7C2',
-    height: 40,
-    width: 120
+    height:windowHeight*0.056,
+    width: windowWidth*0.3
   },
   Pressablecontainer: {
     justifyContent: 'center',

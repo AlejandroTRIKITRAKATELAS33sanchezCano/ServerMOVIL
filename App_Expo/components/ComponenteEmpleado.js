@@ -1,33 +1,31 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, Pressable, Alert, FlatList,ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, Image, TouchableOpacity, Pressable, Alert, FlatList, ActivityIndicator } from 'react-native'
 import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useState } from "react";
 import { Feather } from '@expo/vector-icons';
 import { getEmpUrl } from '../api';
+import { UploadCloudinary } from './UploadCloudinary';
+import { ImageComponent } from './ImageComponent'
 
-const ComponenteEmpleado = ({ navigation, task, handleDelete }) => {
+const ComponenteEmpleado = ({ navigation, task, handleDelete, route }) => {
   const [imageUrl, setImageUrl] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchImageUrl = async () => {
       try {
-        const imageUrl = await getEmpUrl(task.idEmpleado);
-        if (imageUrl && imageUrl.length > 0) {
-          setImageUrl(imageUrl[0].EmUrlimg);
-        }        //console.log(Object.keys(imageUrl));
+        let url = null;
+        const fetchedUrl = await getEmpUrl(task.idEmpleado);
+        url = fetchedUrl && fetchedUrl.length > 0 ? fetchedUrl[0].EmUrlimg : null;
+        setImageUrl(url);
         setLoading(false);
-
-        //console.log(`LA URL DENTRO DEL FETCH ES: ${imageUrl[0].EmUrlimg}`);
       } catch (error) {
         console.log("Error al obtener la URL de la imagen:", error);
         setLoading(false);
-
       }
     };
     fetchImageUrl();
-  }, [task.idEmpleado]);
+  }, [task.EmURLimg]);
 
-  //console.log(`LA URL DENTRO DE COMPONENTE ES: ${url}`)
   const alertborrar = () =>
     Alert.alert('¿ESTÁS SEGURO DE BORRAR A TU EMPLEADO?', 'Si borras al empleado no podrás recuperarlo', [
       {
@@ -37,19 +35,21 @@ const ComponenteEmpleado = ({ navigation, task, handleDelete }) => {
       },
       { text: 'Borrar', onPress: () => handleDelete(task.idEmpleado) },
     ]);
+
   return (
     <View style={styles.viewone}>
       <View style={styles.viewtwo}>
- 
-      {loading ? (
+
+        {loading ? (
           <ActivityIndicator size="small" color="black" />
-        ) : imageUrl ? (
-          <TouchableOpacity disabled={true}>
-            <Image source={{ uri: imageUrl }} style={styles.imageone} />
-          </TouchableOpacity>
         ) : (
-          <Text>No hay imagen disponible</Text>
+          <ImageComponent
+            imageUrl={imageUrl}
+          />
         )}
+
+
+
         <View style={styles.viewthree}>
           <Feather name="edit-2" size={24} color='black'
             onPress={() => navigation.navigate("NuevoEmpleado", { idEmpleado: task.idEmpleado })}
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   text: {
-    color: '#818181'
+    color: 'black'
   },
   textrespuestabd: {
     color: 'black'
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     width: 120
   },
   viewone: {
-    backgroundColor: '#D5F7F8',
+    backgroundColor: '#EAEBED',
     borderRadius: 13,
     width: 365,
     height: 150,

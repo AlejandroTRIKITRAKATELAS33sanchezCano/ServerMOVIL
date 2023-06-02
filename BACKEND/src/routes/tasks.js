@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import {getEmpUrl, getMarcas,getidAdmin,saveAdmin,saveProducto, getProducto, getEmpleadoId, getProductos, getTasks, getTask, getTaskCount, saveTask, deleteTasks, updateTasks, getAdmin} from '../controllers/tasks.js';
+import { updateProducto, deleteProductos, getProductUrl, getCategorias, getProductoId, getEmpUrl, getMarcas, getidAdmin, saveAdmin, saveProducto, getProducto, getEmpleadoId, getProductos, getTasks, getTask, getTaskCount, saveTask, deleteTasks, updateTasks, getAdmin } from '../controllers/tasks.js';
 
 const router = Router();
 
@@ -38,6 +38,8 @@ router.get('/productos/:idProducto', getProducto);
  */
 
 router.post('/productos', saveProducto);
+router.get('/productoid', getProductoId);
+
 /**
  * @swagger
  * /admin:
@@ -45,7 +47,8 @@ router.post('/productos', saveProducto);
  *    summary: Obtiene el id  (empleados)
  *    tags: [Tasks]
  */
-router.get('/empleadourl/:idEmpleado', getEmpUrl)
+router.get('/empleadourl/:idEmpleado', getEmpUrl);
+router.get('/productourl/:idProductos', getProductUrl);
 router.get('/empleadoid', getEmpleadoId);
 /**
  * @swagger
@@ -74,6 +77,8 @@ router.get('/admin/:idAdmin', getAdmin);
  */
 router.get('/productosmarca', getMarcas);
 
+router.get('/productoscategoria', getCategorias);
+
 router.get('/productosAdmin/:idAdmin', getProductos);
 /**
  * @swagger
@@ -92,7 +97,7 @@ router.get('/tasks/count', getTaskCount);
  *    tags: [Tasks]
  */
 
-router.get('/tasksComplete/:idAdmin',getTasks);
+router.get('/tasksComplete/:idAdmin', getTasks);
 
 /**
  * @swagger
@@ -102,7 +107,7 @@ router.get('/tasksComplete/:idAdmin',getTasks);
  *    tags: [Tasks]
  */
 
-router.get('/tasks/:idEmpleado',getTask);
+router.get('/tasks/:idEmpleado', getTask);
 
 /**
  * @swagger
@@ -123,6 +128,7 @@ router.post('/tasks', saveTask);
  */
 
 router.delete('/tasks/:idEmpleado', deleteTasks);
+router.delete('/productos/:idProductos', deleteProductos);
 
 /**
  * @swagger
@@ -133,6 +139,9 @@ router.delete('/tasks/:idEmpleado', deleteTasks);
  */
 
 router.put('/tasks/:id', updateTasks);
+
+router.put('/productos/:id', updateProducto);
+
 
 export default router;
 

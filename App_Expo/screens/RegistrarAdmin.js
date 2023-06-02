@@ -1,4 +1,4 @@
-import { Alert, View, Text, StyleSheet, TextInput, Pressable, TouchableOpacity } from 'react-native'
+import { Alert, View, Text, StyleSheet, TextInput, Pressable, TouchableOpacity, ToastAndroid } from 'react-native'
 import { React, useState } from 'react'
 import { GeneraridAdmin } from '../components/GenerarAdminid';
 import { saveAdmin } from '../api';
@@ -9,11 +9,18 @@ export const RegistrarAdmin = ({ navigation }) => {
     AdNombre: '',
     AdAppat: '',
     AdApmat: '',
-    AdEmail:'',
+    AdEmail: '',
     AdContrasenna: ''
   })
 
+  var regex1 = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+  var regex2 = null
+
   const handleChange = (name, value) => {
+    if (!value) {
+      ToastAndroid.show('Hay lugares vacios', ToastAndroid.SHORT);
+      value = '';
+    }
     setAdmin({ ...admin, [name]: value });
   };
 
@@ -21,6 +28,7 @@ export const RegistrarAdmin = ({ navigation }) => {
     const idNewAdmin = await GeneraridAdmin();
     await handleChange('idAdmin', idNewAdmin)
   }
+  /*
   const handleSubmit = async () => {
     try {
       await saveAdmin(admin);
@@ -38,6 +46,33 @@ export const RegistrarAdmin = ({ navigation }) => {
       console.log(error)
     }
   }
+*/
+const handleSubmit = async () => {
+  try {
+    // Verificar si existen valores vacíos en admin
+    const values = Object.values(admin);
+    const hasEmptyValues = values.some(value => value === '');
+
+    if (hasEmptyValues) {
+      ToastAndroid.show('Hay lugares vacíos', ToastAndroid.SHORT);
+      return;
+    }
+
+    await saveAdmin(admin);
+    Alert.alert(
+      `Este es tu ID: ${admin.idAdmin} y tu contraseña: ${admin.AdContrasenna}`,
+      'Si olvidas tu ID o tu contraseña tendrás que contactar a soporte técnico para su recuperación',
+      [
+        {
+          text: 'Ok',
+        },
+      ]
+    );
+    navigation.navigate("Inicio");
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   return (
     <View style={styles.centeredView}>
@@ -47,27 +82,57 @@ export const RegistrarAdmin = ({ navigation }) => {
         <TextInput
           style={styles.inputNombre}
           placeholder="NOMBRE"
-          onChangeText={(text) => handleChange('AdNombre', text)}
+          onChangeText={(text) => {
+            if (regex1.test(text) || text.length > 45 || typeof text !== 'string') {
+              ToastAndroid.show('No se aceptan caracteres especiales, longitud maxima de 45 caracteres', ToastAndroid.SHORT);
+              return;
+            }
+            handleChange('AdNombre', text)
+          }}
         />
         <TextInput
           style={styles.inputApPa}
           placeholder="APELLIDO PATERNO"
-          onChangeText={(text) => handleChange('AdAppat', text)}
+          onChangeText={(text) => {
+            if (regex1.test(text) || text.length > 45 || typeof text !== 'string') {
+              ToastAndroid.show('No se aceptan caracteres especiales, longitud maxima de 45 caracteres', ToastAndroid.SHORT);
+              return;
+            }
+            handleChange('AdAppat', text)
+          }}
         />
         <TextInput
           style={styles.inputApMa}
           placeholder="APELLIDO MATERNO"
-          onChangeText={(text) => handleChange('AdApmat', text)}
+          onChangeText={(text) => {
+            if (regex1.test(text) || text.length > 45 || typeof text !== 'string') {
+              ToastAndroid.show('No se aceptan caracteres especiales, longitud maxima de 45 caracteres', ToastAndroid.SHORT);
+              return;
+            }
+            handleChange('AdApmat', text)
+          }}
         />
         <TextInput
           style={styles.inputMail}
           placeholder="EMAIL"
-          onChangeText={(text) => handleChange('AdEmail', text)}
+          onChangeText={(text) => {
+            if (!/^\S+@\S+\.\S+$/.test(text) || text.length > 45 || typeof text !== 'string') {
+              ToastAndroid.show('Correo invalido, longitud maxima de 45 caracteres', ToastAndroid.SHORT);
+              return;
+            }
+            handleChange('AdEmail', text);
+          }}
         />
         <TextInput
           style={styles.inputcontraseña}
           placeholder="CONTRASEÑA"
-          onChangeText={(text) => handleChange('AdContrasenna', text)}
+          onChangeText={(text) => {
+            if (text.length > 45) {
+              ToastAndroid.show('Longitud maxima de 45 caracteres', ToastAndroid.SHORT);
+              return;
+            }
+            handleChange('AdContrasenna', text)
+          }}
           secureTextEntry={true}
           onFocus={() => asign()}
         />

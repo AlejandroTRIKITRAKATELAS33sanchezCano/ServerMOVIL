@@ -12,6 +12,8 @@ select * from tasks where title like '%e';
 
 --clausula betwen
 
+insert into productos (idProductos, PrNombre, PrPrecio, PrExistencias, PrDescripcion, Admin_idAdmin, Marca_idMarca, Categoria_idCategoria, Pcodigo, PrURLimg) values(123456,'Goma',12,20,'Goma factis miga suave',1,1,1,1,'https://www.olinkapapelerias.com/images/thumbs/0002604_510.jpg');
+
 
 /*
 use repasocrud;

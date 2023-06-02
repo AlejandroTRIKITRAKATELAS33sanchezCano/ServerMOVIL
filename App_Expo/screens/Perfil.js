@@ -1,10 +1,12 @@
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Dimensions, Alert, BackHandler } from 'react-native'
+import { AppState,View, Text, StyleSheet, TouchableOpacity, FlatList, Dimensions, Alert, BackHandler, Modal, Pressable, SafeAreaView  } from 'react-native'
 import React, { useEffect, useState } from "react";
 import { Ionicons } from '@expo/vector-icons';
 import { selectAdmin } from '../api';
 import Session from '../components/Session';
-
-
+import AwesomeAlert from 'react-native-awesome-alerts';
+//import Constants from 'expo-constants';
+//import { ExpoUpdates } from 'expo-updates';
+//import { Updates } from 'expo';
 var { height } = Dimensions.get('window');
 var box_count = 1;
 var box_height = height / box_count;
@@ -12,8 +14,16 @@ var box_height = height / box_count;
 var { width } = Dimensions.get('window');
 var box_count = 1;
 var box_width = width / box_count;
+export const Perfil = ({navigation}) => {
+/*
+  var { height } = Dimensions.get('window');
+  var box_count = 1;
+  var box_height = height / box_count;
 
-export const Perfil = () => {
+  var { width } = Dimensions.get('window');
+  var box_count = 1;
+  var box_width = width / box_count;
+*/
   const idadminB = Session.idadminB;
   const [tasks, setTasks] = useState([])
 
@@ -26,23 +36,21 @@ export const Perfil = () => {
   useEffect(() => {
     loadTasks()
   }, [])
-
+  const [showAlert, setShowAlert] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const renderItem = ({ item }) => {
 
     const salir = () => {
 
-      Alert.alert('¿ESTÁS SEGURO SALIR DE LA APLICACIÓN?', `¡Nos vemos pronto! ${item.AdNombre}`, [
+      Alert.alert('¡Nos vemos pronto!', ` ${item.AdNombre}`, [
         {
-          text: 'Cancelar',
-          onPress: () => console.log('Acción cancelada'),
-          style: 'cancel',
+          text: 'Salir', onPress: () => BackHandler.exitApp()
         },
-        { text: 'Salir', onPress: () => BackHandler.exitApp() },
       ]);
     }
-
+    const message = `¡Hasta la próxima! ${item.AdNombre}`
     return (
-      <View style={styles.container_config}>
+      <SafeAreaView style={styles.container_config}>
         <View style={styles.container_perfil}>
           <View style={styles.container_id}>
             <Text style={styles.text_id}>ID</Text>
@@ -66,26 +74,69 @@ export const Perfil = () => {
         </View>
         <View style={styles.container_icn}>
           <View style={styles.container_icn2}>
-            <TouchableOpacity onPress={salir}>
-              <Ionicons name="md-log-out-outline" size={62} color="red" />
-            </TouchableOpacity>
+
+            <View style={styles.Background2}>
+              <Pressable
+                style={[styles.buttonOpen]}
+                onPress={() => setShowAlert(!showAlert)}>
+                <Ionicons name="md-log-out-outline" size={62} color="red" />
+              </Pressable>
+            </View>
           </View>
         </View>
+        <AwesomeAlert
+          show={showAlert}
 
-      </View>
+          title="¿Seguro de salir de la aplicación?"
+          titleStyle={{ fontSize: 28, color: "red", alignItems: 'center', justifyContent: "center", textAlign: 'center' }}
+
+          message={message}
+          messageStyle={{ color: "black", fontSize: 20, alignItems: "center", justifyContent: "center" }}
+
+          showCancelButton={true}
+          cancelText="Cancelar"
+          cancelButtonStyle={{ backgroundColor: "red", width: 115, justifyContent: "center", alignItems: "center", borderRadius: 15 }}
+          cancelButtonTextStyle={{ fontSize: 19 }}
+          onCancelPressed={() => {
+            console.log('Cancel button pressed')
+            setShowAlert(false)
+          }}
+
+          showConfirmButton={true}
+          confirmText="Salir"
+          confirmButtonStyle={{ backgroundColor: "blue", width: 85, justifyContent: "center", alignItems: "center", borderRadius: 15 }}
+          confirmButtonTextStyle={{ fontSize: 19 }}
+          onConfirmPressed={() => {
+             //Updates.reloadAsync();
+             navigation.navigate('Inicio', { shouldResetFields: true });
+             BackHandler.exitApp();
+             setShowAlert(false);
+            /*
+            //Updates.reloadAsync();
+            navigation.navigate("Inicio")
+            BackHandler.exitApp();
+            setShowAlert(false);
+            */
+          }}
+
+          closeOnTouchOutside={false} // default true
+          closeOnHardwareBackPress={false} // default true
+          onDismiss={() => console.log('Dismiss Called.')}
+        />
+      </SafeAreaView>
     )
   }
 
 
 
   return (
-    <View>
+    <SafeAreaView style={styles.container}>
       <FlatList
         data={tasks}
         keyExtractor={(item) => item.idAdmin + ''}
         renderItem={renderItem}
       />
-    </View>
+    </SafeAreaView>
 
   );
 };
@@ -93,31 +144,28 @@ export const Perfil = () => {
 const styles = StyleSheet.create({
   idtext: {
     fontSize: 35,
-    color: '#01A7C2', backgroundColor: "white",
+    color: '#01A7C2',
+    backgroundColor: "white",
     borderRadius: 15,
     paddingHorizontal: 5,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.32,
-    shadowRadius: 5.46,
-
-    elevation: 9,
   },
   container_config: {
     flex: 1,
     backgroundColor: "#01A7C2",
     alignItems: "center",
+    height: box_height,
+    justifyContent: "center",
     textAlign: "center"
   },
   container_perfil: {
+    alignItems: "center",
     backgroundColor: "#57A8AA",
-    backgroundColor: "#EAEBED",
+    backgroundColor: "white",
     borderRadius: 20,
     marginTop: 15,
-    width: 350
+    width: 350,
+    justifyContent: "center",
+    textAlign: "center"
   },
 
   container_id: {
@@ -151,9 +199,6 @@ const styles = StyleSheet.create({
     width: 80,
     paddingHorizontal: 11,
     paddingVertical: 7,
-    shadowColor: 'black',
-    shadowOpacity: 0.9,
-    elevation: 5,
   },
 
   text_id: {
@@ -170,15 +215,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 15,
     paddingHorizontal: 5,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.32,
-    shadowRadius: 5.46,
-
-    elevation: 9,
   },
 
   text_mark: {
@@ -191,8 +227,71 @@ const styles = StyleSheet.create({
     color: "#01A7C2",
     fontSize: 20,
   },
+
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 45,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+  },
+  button: {
+    margin: 20,
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  buttonClose2: {
+    backgroundColor: 'red',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 20
+  },
+  modalText: {
+    color: 'red',
+    marginBottom: 15,
+    fontSize: 35,
+    textAlign: 'center',
+  },
+  modalTextcon: {
+    marginBottom: 15,
+    fontSize: 20,
+    textAlign: 'center',
+  },
+  contenedorBotones: {
+    flexDirection: 'row'
+  },
+  header: {
+    backgroundColor: '#333',
+    color: '#fff',
+    padding: 20,
+    textAlign: 'center',
+    fontSize: 18,
+  },
+  containerBackground: {
+    backgroundColor: '#016574',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  Background2: {
+    backgroundColor: 'white',
+    borderRadius: 45
+  }
 });
 
 
 export default Perfil
-

@@ -1,86 +1,181 @@
-import { React, useState, useEffect } from 'react'
-import { View, StyleSheet, Text, Image, TouchableOpacity } from "react-native";
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Text, Image, TouchableOpacity, ToastAndroid } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { Fontisto } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import { saveProducto } from '../api';
-import { GenerarIdEmpleado } from '../components/Generar';
+import { GenerarIdProducto } from '../components/GenerarProductid';
+import Session from '../components/Session';
+import { UploadCloudinaryProduct } from '../components/UploadCloudinaryProduct';
+import { getProducto } from '../api';
 import { getMarcas } from '../api';
+import { getCategorias } from '../api';
+import { updateProducto } from '../api';
+//import RNPickerSelect from 'react-native-picker-select';
 import SelectDropdown from 'react-native-select-dropdown'
 
 
-export const EditProducto = ({ navigation }) => {
-  const [marca, setMarca] = useState(null);
-  const categoria = ["Cuadernos", "Plumas", "Resistoles", "colores"]
+export const EditProducto = ({ navigation, route }) => {
+  //console.log(`EL ROUTE.PARAMS EN EL USEFFECT DE EDIT ES: ${route.params.idProducto}`)
+  const defaultButtonText = 'Seleccionar';
+  const [marcas, setMarcas] = useState([]);
+  const [categorias, setCategorias] = useState([]);
+
 
   const asignMC = async () => {
-    //const marca = ["Norma", "Pritt", "Buffy", "Zebra"]
-    const marcajson = await getMarcas;
-    const marcaArray = await marcajson.json().toArray();
-    setMarca(marcaArray)
-    console.log(`LAS MARCAS SON: ${marca}`)
-  }
-  asignMC();
+    try {
+      //console.log(`DENTRO DEL MC MARCAS EN CERO: ${marcas[0]}`)
+      const marcasData = await getMarcas();
+      if (!Array.isArray(marcasData)) {
+        console.error('El resultado de getMarcas() no es un array:', marcasData);
+        return;
+      }
+      const marcasNombres = marcasData.map((marca) => marca.MarNombre);
+      setMarcas(marcasNombres);
+    } catch (error) {
+      console.error('Error al obtener las marcas en asignMC', error);
+    }
+  };
+
+
+  const asignCM = async () => {
+    try {
+      const categoriasData = await getCategorias();
+      if (!Array.isArray(categoriasData)) {
+        console.error('El resultado de getCategorias() no es un array:', categoriasData);
+        return;
+      }
+      const categoriasNombres = categoriasData.map((categoria) => categoria.CatNombre);
+      setCategorias(categoriasNombres);
+    } catch (error) {
+      console.error('Error al obtener las categorias en asignCM', error);
+    }
+  };
+
+
+  useEffect(() => {
+    asignMC();
+    asignCM();
+  }, []);
+
+
+  const idadminB = Session.idadminB;
 
   const [producto, setProducto] = useState({
     idProductos: '',
     PrNombre: '',
-    PrExistencias: '',
     PrPrecio: '',
+    PrExistencias: '',
     PrDescripcion: '',
-    Categoria_idCategoria: '',
+    Admin_idAdmin: idadminB,
     Marca_idMarca: '',
-    Admin_idAdmin: '1',
-    Pcodigo: '1'
+    Categoria_idCategoria: '',
+    Pcodigo: 1,
+    PrURLimg: ''
   })
 
-  const asign = async () => {
-    if (!id) {
-      const idNewEmpleado = await GenerarIdEmpleado();
-      //console.log(`EL VALOR DEL idNewEmpleado dentro de asign es : ${idNewEmpleado}`)
-      await handleChange('idProductos', idNewEmpleado)
-    } else {
-      console.log('El empleado ya tiene un ID')
-    }
-  }
-
+  var regex1 = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+  var regex2 = null
   const handleChange = (name, value) => {
+    if (name === 'PrExistencias' || name === 'PrPrecio') {
+      if (isNaN(value)) {
+        ToastAndroid.show('Hay campos vacíos', ToastAndroid.SHORT);
+        return;
+      }
+    }
     setProducto({ ...producto, [name]: value });
   };
 
-  const [edit, setEdit] = useState(false);
-  const [id, setId] = useState(false);
+  const asign = async () => {
+    if (!id) {
+      const idNewProducto = await GenerarIdProducto();
+      console.log(`EL VALOR DEL idNewEmpleado dentro de asign es : ${idNewProducto}`)
+      await handleChange('idProductos', idNewProducto)
+    } else {
+      console.log('El producto ya tiene un ID')
+    }
+  }
+
+  const handleImageSelected = (imageUrl) => {
+    console.log(`EL LINK DE LA IMAGEN DENTRO DEL handleImageSelected es: ${imageUrl}`);
+    if (typeof imageUrl === 'string') {
+      handleChange('PrURLimg', imageUrl);
+    } else {
+      console.log('La URL de la imagen no es una cadena de texto válida');
+    }
+  };
 
   const handleSubmit = async () => {
     try {
       if (!edit) {
-        await saveProducto(producto)
+        let hasEmptyFields = false;
+        for (const field in producto) {
+          if (producto.hasOwnProperty(field)) {
+            const value = producto[field];
+            if (typeof value === 'string' && value.trim() === '') {
+              hasEmptyFields = true;
+              break;
+            }
+          }
+        }
+        if (hasEmptyFields) {
+          console.log('Hay campos vacíos');
+        } else {
+          await saveProducto(producto);
+        }
       } else {
-        //await updateEmpleado(route.params.idEmpleado, task)
+        await updateProducto(route.params.idProducto, producto);
       }
-      navigation.navigate("Inventario")
+      navigation.navigate("Inventario");
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
-  
+
+  const [edit, setEdit] = useState(false);
+  const [id, setId] = useState(false);
+
+
+
+  useEffect(() => {
+    //console.log(`EL ROUTE.PARAMS EN EL USEFFECT DE EDIT ES: ${route.params.idProducto}`)
+    if (route.params && route.params.idProducto) {
+      navigation.setOptions({
+        headerTitle: 'Editar Producto'
+      });
+
+      setEdit(true);
+      setId(true);
+
+      (async () => {
+        //console.log('Está en la función')
+        const prcto = await getProducto(route.params.idProducto);
+        //console.log(`LAS EXISTENCIAS SON: ${prcto.PrExistencias}`)
+        //console.log(`EL PRODUCTO: ${prcto}`)
+        //console.log(`EL NOMBRE ES: ${prcto.PrNombre}`)
+        setProducto({
+          idProductos: prcto.idProductos,
+          PrNombre: prcto.PrNombre,
+          PrPrecio: prcto.PrPrecio,
+          PrExistencias: prcto.PrExistencias || '',
+          PrDescripcion: prcto.PrDescripcion,
+          Admin_idAdmin: prcto.Admin_idAdmin,
+          Marca_idMarca: prcto.Marca_idMarca,
+          Categoria_idCategoria: prcto.Categoria_idCategoria,
+          Pcodigo: prcto.Pcodigo,
+          PrURLimg: prcto.PrURLimg
+        })
+      })();
+    }
+  }, [])
  
+
+
   return (
     <View style={styles.center}>
-      <View style={styles.container}>
-        <View style={styles.container_bs1}>
-          <View style={styles.container_img}>
-            <Image
-              source={{
-                uri: "https://thoro.com.mx/ethoro/wp-content/uploads/2021/03/PE0026_011.jpg"
-              }}
-              style={styles.img_prod}
-            />
-          </View>
-        </View>
-
-
-
-        <View style={{ alignContent: 'center', justifyContent: 'center', alignItems: 'center', top: -40 }}>
+      <View style={styles.container}> 
+        <View style={{ alignContent: 'center', justifyContent: 'center', alignItems: 'center', top: 30 }}>
+       
           <View style={styles.container_infotxt}>
             <Text style={styles.surtxt}>Producto:</Text>
           </View>
@@ -88,7 +183,15 @@ export const EditProducto = ({ navigation }) => {
             <TextInput
               style={styles.infotxt}
               placeholder="Ingresa el nombre del producto"
-              onChangeText={(text) => handleChange('PrNombre', text)}
+              onChangeText={(text) => {
+                if(regex1.test(text) || text.length > 45 || typeof text !== 'string'){
+                  ToastAndroid.show('No se aceptan caracteres especiales, longitud maxima de 45 caracteres', ToastAndroid.SHORT);
+                  return;
+                }
+                handleChange('PrNombre', text)}}
+              onFocus={() => asign()}
+              value={producto.PrNombre}
+
             />
           </View>
 
@@ -97,10 +200,16 @@ export const EditProducto = ({ navigation }) => {
           </View>
           <View style={styles.container_infoinput}>
             <TextInput
+              value={producto.PrExistencias.toString()}
               style={styles.infotxt}
               placeholder="Ingresa las existencias"
               keyboardType="numeric"
-              onChangeText={(text) => handleChange('PrExistencias', text)}
+              onChangeText={(text) => {
+                if(regex1.test(text) || text.length > 45 || isNaN(text)){
+                  ToastAndroid.show('No se aceptan caracteres especiales, longitud maxima de 45 caracteres, Solo numeros', ToastAndroid.SHORT);
+                  return;
+                }
+                handleChange('PrExistencias', text)}}
             />
           </View>
 
@@ -112,7 +221,13 @@ export const EditProducto = ({ navigation }) => {
               style={styles.infotxt}
               placeholder="Ingresa el precio"
               keyboardType="numeric"
-              onChangeText={(text) => handleChange('PrPrecio', text)}
+              onChangeText={(text) => {
+                if(regex1.test(text) || text.length > 45 || isNaN(text)){
+                  ToastAndroid.show('No se aceptan caracteres especiales, longitud maxima de 45 caracteres, Solo numeros', ToastAndroid.SHORT);
+                  return;
+                }
+                handleChange('PrPrecio', text)}}
+              value={producto.PrPrecio}
             />
           </View>
 
@@ -123,70 +238,53 @@ export const EditProducto = ({ navigation }) => {
             <TextInput
               style={styles.infotxt}
               placeholder="Ingresa una descripción"
-              onChangeText={(text) => handleChange('PrDescripcion', text)}
+              onChangeText={(text) => {
+                if(regex1.test(text) || text.length > 500 || typeof text !== 'string'){
+                  ToastAndroid.show('No se aceptan caracteres especiales, longitud maxima de 500 caracteres', ToastAndroid.SHORT);
+                  return;
+                }
+                handleChange('PrDescripcion', text)}}
+              value={producto.PrDescripcion}
             />
 
           </View>
 
-          <View style={{ alignItems: 'center', alignContent: 'center' }}>
+          <View style={{ alignItems: 'center', alignContent: 'center', backgroundColor: 'green' }}>
             <SelectDropdown
-              data={marca}
+              onPress={asignMC}
+              dropdownStyle={{ backgroundColor: 'orange' }}
+              defaultButtonText="Seleccionar marca"
+              defaultValue={edit ? marcas[producto.Marca_idMarca - 1] : defaultButtonText}
+              data={marcas}
               onSelect={(selectedItem, index) => {
                 console.log(selectedItem, index)
-              }}
-              buttonTextAfterSelection={(selectedItem, index) => {
-                // text represented after item is selected
-                // if data array is an array of objects then return selectedItem.property to render after item is selected
-                return selectedItem
-              }}
-              rowTextForSelection={(item, index) => {
-                // text represented for each item in dropdown
-                // if data array is an array of objects then return item.property to represent item in dropdown
-                return item
+                let mar = index + 1
+                console.log(`EL INDEX FINAL ES: ${mar}`)
+                handleChange('Marca_idMarca', mar)
               }}
             />
+
             <SelectDropdown
-              data={categoria}
+              onPress={asignCM}
+              dropdownStyle={{ backgroundColor: 'white' }}
+              defaultButtonText="Seleccionar Categoría"
+              defaultValue={edit ? categorias[producto.Categoria_idCategoria - 1] : defaultButtonText}
+              data={categorias}
               onSelect={(selectedItem, index) => {
                 console.log(selectedItem, index)
-              }}
-              buttonTextAfterSelection={(selectedItem, index) => {
-                // text represented after item is selected
-                // if data array is an array of objects then return selectedItem.property to render after item is selected
-                return selectedItem
-              }}
-              rowTextForSelection={(item, index) => {
-                // text represented for each item in dropdown
-                // if data array is an array of objects then return item.property to represent item in dropdown
-                return item
+                let mar = index + 1
+                console.log(`EL INDEX FINAL EN CATEGORIA ES: ${mar}`)
+                handleChange('Categoria_idCategoria', mar)
               }}
             />
           </View>
-          {/*
-          <View style={styles.container_infotxt}>
-            <Text style={styles.surtxt}>Categoria:</Text>
+          <View style={styles.container_bs1}>
+            <View style={styles.container_img}>
+              <UploadCloudinaryProduct onImageSelected={handleImageSelected} image={producto.PrURLimg} />
+            </View>
           </View>
-          <View style={styles.container_infoinput}>
-            <TextInput
-              style={styles.infotxt}
-              placeholder="En minusculas y sin acentos"
-              onChangeText={(text) => handleChange('Categoria_idCategoria', text)}
-            />
-          </View>
-          <View style={styles.container_infotxt}>
-            <Text style={styles.surtxt}>Marca:</Text>
-          </View>
-          <View style={styles.container_infoinput}>
-            <TextInput
-              style={styles.infotxt}
-              placeholder="En minusculas y sin acentos"
-              onChangeText={(text) => handleChange('Marca_idMarca', text)}
-              onFocus={() => asign()}
-            />
-          </View>
-          */}
           <TouchableOpacity onPress={handleSubmit} style={styles.icon}>
-            <Fontisto name="save" size={40} color="black" />
+            <Fontisto name="save" size={40} color="black" style={styles.icon}/>
           </TouchableOpacity>
         </View>
       </View>
@@ -196,18 +294,19 @@ export const EditProducto = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   icon: {
-    top: -330,
-    left: 0,
+    top: -40,
+    marginBottom: 10,
   },
   center: {
     flex: 1,
     backgroundColor: '#01A7C2',
     alignItems: "center",
-    alignContent: "center"
+    alignContent: "center",
+    paddingTop:50
   },
   container: {
     width: 300,
-    height: 490,
+    height: 500,
     marginRight: 50,
     marginLeft: 50,
     marginTop: 50,
@@ -220,20 +319,14 @@ const styles = StyleSheet.create({
   container_bs1: {
     width: 200,
     height: 200,
-    marginTop: 25,
+    marginLeft: 80,
     alignContent: 'center',
-    alignItems: 'center'
-  },
-  container_bs2: {
-    marginTop: 25,
-    marginLeft: 50,
-    marginRight: 50,
+    alignItems: 'center',
   },
   container_img: {
     width: 200,
     height: 200,
     borderRadius: 15,
-    top: -10
   },
   container_infotxt: {
     width: 235,
