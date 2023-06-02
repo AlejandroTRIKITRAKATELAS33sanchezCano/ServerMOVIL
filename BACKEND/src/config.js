@@ -18,7 +18,8 @@ export const dbdates = {
    */
 }
 
-/*export const PORT = process.env.PORT || 3000
+export const PORT = process.env.PORT || 3000
+/*
 export const USER = process.env.PORT || 'root'
 export const PASSWORD = process.env.PORT || 'celisSOLIS1027'
 export const DBNAME = process.env.PORT || 'tasksdb'
