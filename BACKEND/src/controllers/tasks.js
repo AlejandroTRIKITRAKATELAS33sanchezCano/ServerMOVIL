@@ -157,7 +157,7 @@ const deleteTasks = async (req, res) => {
 
 const deleteProductos = async (req, res) => {
     const connection = await connect();
-    const result = await connection.query(`DELETE FROM Producto WHERE idProductos = ${req.params.idProductos}`);
+    const result = await connection.query(`DELETE FROM Productos WHERE idProductos = ${req.params.idProductos}`);
     /**    console.log(`EL RESULTADO DEL ID OBTENIDO EN DELETE ES: ${req.params.idEmpleado}`); */
     res.sendStatus(204);
 
